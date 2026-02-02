@@ -12,61 +12,174 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Mobile menu toggle
+// Create animated particle background
+function createParticles() {
+    const hero = document.querySelector('.hero');
+    const particlesContainer = document.createElement('div');
+    particlesContainer.className = 'particles-container';
+    
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.cssText = `
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation: float-particle ${5 + Math.random() * 10}s ease-in-out infinite;
+            animation-delay: ${Math.random() * 5}s;
+        `;
+        particlesContainer.appendChild(particle);
+    }
+    
+    hero.appendChild(particlesContainer);
+}
+
+// Add particle float animation to CSS dynamically
+const particleStyle = document.createElement('style');
+particleStyle.textContent = `
+    .particles-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 1;
+    }
+    
+    @keyframes float-particle {
+        0%, 100% { 
+            transform: translateY(0px) translateX(0px) scale(0.8);
+            opacity: 0.6;
+        }
+        33% { 
+            transform: translateY(-20px) translateX(10px) scale(1);
+            opacity: 1;
+        }
+        66% { 
+            transform: translateY(-10px) translateX(-15px) scale(0.9);
+            opacity: 0.8;
+        }
+    }
+`;
+document.head.appendChild(particleStyle);
+
+// Enhanced mobile menu toggle with animations
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
+const navLinks = document.querySelectorAll('.nav-link');
 
 hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
     navMenu.classList.toggle('active');
+    document.body.classList.toggle('menu-open');
 });
 
 // Close mobile menu when clicking on a link
-document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-}));
+navLinks.forEach((link, index) => {
+    link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        document.body.classList.remove('menu-open');
+    });
+});
 
-// Navbar background on scroll
+// Enhanced navbar background on scroll
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+    const scrolled = window.scrollY;
+    
+    if (scrolled > 50) {
+        navbar.style.background = 'rgba(255, 255, 255, 0.92)';
+        navbar.style.backdropFilter = 'blur(25px) saturate(200%)';
+        navbar.style.borderBottom = '1px solid rgba(99, 102, 241, 0.1)';
+        navbar.style.boxShadow = '0 10px 40px rgba(31, 38, 135, 0.2)';
     } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        navbar.style.boxShadow = 'none';
+        navbar.style.background = 'rgba(255, 255, 255, 0.85)';
+        navbar.style.backdropFilter = 'blur(20px) saturate(180%)';
+        navbar.style.borderBottom = '1px solid rgba(255, 255, 255, 0.2)';
+        navbar.style.boxShadow = '0 8px 32px rgba(31, 38, 135, 0.15)';
+    }
+    
+    // Parallax effect for hero section
+    const hero = document.querySelector('.hero');
+    if (hero && scrolled < window.innerHeight) {
+        const parallax = scrolled * 0.3;
+        hero.style.transform = `translateY(${parallax}px)`;
     }
 });
 
-// Animate elements on scroll
+// Enhanced animate elements on scroll with stagger effect
 const observerOptions = {
-    threshold: 0.1,
+    threshold: 0.15,
     rootMargin: '0px 0px -50px 0px'
 };
 
 const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+    entries.forEach((entry, index) => {
         if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0) scale(1)';
+                entry.target.classList.add('animated');
+            }, index * 150); // Stagger animation
         }
     });
 }, observerOptions);
 
-// Observe all feature cards and app showcases
+// Observe all elements and initialize animations
 document.addEventListener('DOMContentLoaded', () => {
-    const animatedElements = document.querySelectorAll('.feature-card, .app-showcase, .security-feature, .tech-item');
+    // Create particle background
+    createParticles();
     
-    animatedElements.forEach(el => {
+    // Setup scroll animations
+    const animatedElements = document.querySelectorAll('.feature-card, .app-showcase, .security-feature, .tech-item, .download-app');
+    
+    animatedElements.forEach((el, index) => {
         el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        el.style.transform = 'translateY(40px) scale(0.95)';
+        el.style.transition = 'opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
         observer.observe(el);
+    });
+    
+    // Enhanced phone animations with 3D effect
+    const phones = document.querySelectorAll('.phone');
+    phones.forEach((phone, index) => {
+        phone.style.opacity = '0';
+        phone.style.transform = 'translateY(60px) rotateX(15deg) rotateY(15deg) scale(0.9)';
+        phone.style.transition = 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        
+        setTimeout(() => {
+            phone.style.opacity = '1';
+            phone.style.transform = 'translateY(0) rotateX(0) rotateY(0) scale(1)';
+        }, index * 300 + 800);
+    });
+    
+    // Add mouse parallax effect to feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+            
+            card.style.transform = `translateY(-15px) scale(1.02) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) scale(1) rotateX(0) rotateY(0)';
+        });
     });
 });
 
-// Add loading animation to download buttons
+// Enhanced loading animation for download buttons
 document.querySelectorAll('.download-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -74,48 +187,89 @@ document.querySelectorAll('.download-btn').forEach(btn => {
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <div class="btn-text"><span class="btn-subtitle">Preparing</span><span class="btn-title">Download...</span></div>';
         btn.style.pointerEvents = 'none';
+        btn.style.transform = 'scale(0.95)';
+        btn.style.background = 'rgba(99, 102, 241, 0.2)';
         
         setTimeout(() => {
             btn.innerHTML = originalText;
             btn.style.pointerEvents = 'auto';
+            btn.style.transform = 'scale(1)';
+            btn.style.background = '';
             
-            // Show a message (in a real app, this would redirect to the app store)
-            showNotification('Coming soon! Apps will be available on the App Store and Google Play.');
-        }, 2000);
+            // Enhanced notification
+            showNotification('🚀 Coming soon! Apps will be available on the App Store and Google Play.');
+        }, 2500);
+    });
+    
+    // Add ripple effect
+    btn.addEventListener('click', (e) => {
+        const ripple = document.createElement('span');
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            pointer-events: none;
+        `;
+        
+        btn.style.position = 'relative';
+        btn.style.overflow = 'hidden';
+        btn.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
     });
 });
 
-// Notification system
+// Enhanced notification system
 function showNotification(message) {
     const notification = document.createElement('div');
     notification.style.cssText = `
         position: fixed;
         top: 100px;
         right: 20px;
-        background: #6366f1;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
         color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        padding: 1.2rem 1.8rem;
+        border-radius: 16px;
+        box-shadow: 
+            0 20px 40px rgba(99, 102, 241, 0.4),
+            0 0 0 1px rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(20px);
         z-index: 10000;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-        max-width: 300px;
+        transform: translateX(400px) scale(0.8);
+        transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        max-width: 320px;
+        font-weight: 500;
+        border: 1px solid rgba(255, 255, 255, 0.3);
     `;
     notification.textContent = message;
     
     document.body.appendChild(notification);
     
     setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
+        notification.style.transform = 'translateX(0) scale(1)';
     }, 100);
     
     setTimeout(() => {
-        notification.style.transform = 'translateX(400px)';
+        notification.style.transform = 'translateX(400px) scale(0.8)';
         setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 4000);
+            if (notification.parentNode) {
+                document.body.removeChild(notification);
+            }
+        }, 500);
+    }, 5000);
 }
 
 // Phone mockup animations
@@ -197,14 +351,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 });
 
-// Add floating animation to app icons
+// Add floating animation to app icons and hamburger animations
 document.querySelectorAll('.app-icon').forEach(icon => {
     icon.style.animation = 'float 3s ease-in-out infinite';
 });
 
-// Add CSS for floating animation
-const style = document.createElement('style');
-style.textContent = `
+// Add essential CSS for animations
+const enhancedStyles = document.createElement('style');
+enhancedStyles.textContent = `
     @keyframes float {
         0%, 100% { transform: translateY(0px); }
         50% { transform: translateY(-10px); }
@@ -212,6 +366,7 @@ style.textContent = `
     
     .hamburger.active span:nth-child(1) {
         transform: rotate(-45deg) translate(-5px, 6px);
+        background: #6366f1;
     }
     
     .hamburger.active span:nth-child(2) {
@@ -220,29 +375,30 @@ style.textContent = `
     
     .hamburger.active span:nth-child(3) {
         transform: rotate(45deg) translate(-5px, -6px);
+        background: #6366f1;
     }
     
-    @media (max-width: 768px) {
-        .nav-menu {
-            position: fixed;
-            left: -100%;
-            top: 70px;
-            flex-direction: column;
-            background-color: white;
-            width: 100%;
-            text-align: center;
-            transition: 0.3s;
-            box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
-            padding: 2rem 0;
+    .hamburger span {
+        transition: all 0.3s ease;
+    }
+    
+    body.menu-open {
+        overflow: hidden;
+    }
+    
+    .animated {
+        animation: fadeInScale 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    
+    @keyframes fadeInScale {
+        0% {
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
         }
-        
-        .nav-menu.active {
-            left: 0;
-        }
-        
-        .nav-menu li {
-            margin: 1rem 0;
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(enhancedStyles);
